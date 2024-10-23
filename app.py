@@ -1,7 +1,15 @@
 import streamlit as st
+from google.colab import userdata
+from huggingface_hub import login
 from transformers import pipeline
 
-# Initialize the text generation pipeline with the desired model
+# Retrieve the Hugging Face token from Colab's secrets
+# HF_TOKEN = userdata.get('HF_TOKEN')
+
+# # Authenticate using the retrieved Hugging Face token
+# login(token=HF_TOKEN)
+
+# Set up the text generation pipeline using GPT-2
 generator = pipeline("text-generation", model="gpt2")
 
 # Streamlit app title
@@ -13,8 +21,14 @@ if 'history' not in st.session_state:
 
 # Function to generate chatbot responses
 def generate_response(user_input):
-    response = generator(user_input, max_length=150, num_return_sequences=1,
-                          pad_token_id=50256, temperature=0.7, top_k=50, top_p=0.95)
+    response = generator(user_input,
+                         max_length=150,
+                         num_return_sequences=1,
+                         pad_token_id=50256,
+                         truncation=True,
+                         temperature=0.7,
+                         top_k=50,
+                         top_p=0.95)
     return response[0]['generated_text']
 
 # Input box for user symptoms
