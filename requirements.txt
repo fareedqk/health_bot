@@ -1,4 +1,6 @@
-streamlit 
+streamlit
 transformers
 huggingface-hub
-google.colab
+torch  # Include PyTorch, which is required for Transformers
+# Optionally, include TensorFlow if you plan to use models that require it
+# tensorflow
