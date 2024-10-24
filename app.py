@@ -1,13 +1,13 @@
 import streamlit as st
 # from google.colab import userdata
-from huggingface_hub import login
+# from huggingface_hub import login
 from transformers import pipeline
 
 # Retrieve the Hugging Face token from Colab's secrets
 # HF_TOKEN = userdata.get('HF_TOKEN')
 
 # Authenticate using the retrieved Hugging Face token
-login(token=HF_TOKEN)
+# login(token=HF_TOKEN)
 
 # Set up the text generation pipeline using GPT-2
 generator = pipeline("text-generation", model="gpt2")
