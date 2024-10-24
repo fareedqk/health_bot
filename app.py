@@ -57,9 +57,8 @@
 import streamlit as st
 from transformers import pipeline
 
-# Set up the text generation pipeline using a more appropriate model
-# You could use "microsoft/DialogRPT" or "distilgpt2" for conversational use cases
-generator = pipeline("text-generation", model="gpt2")
+# Set up the text generation pipeline using a more suitable conversational model
+generator = pipeline("text-generation", model="gpt2")  # Can switch to conversational models
 
 # Streamlit app title
 st.title("Health Chatbot")
@@ -70,9 +69,9 @@ if 'history' not in st.session_state:
 
 # Function to generate chatbot responses
 def generate_response(user_input):
-    # Concatenate the history of conversation
-    conversation_history = " ".join(st.session_state.history) + " " + user_input
-    response = generator(conversation_history,
+    # Concatenate a limited conversation history to maintain context
+    context = " ".join(st.session_state.history[-4:]) + " " + user_input  # Limiting to last 4 exchanges
+    response = generator(context,
                          max_length=150,
                          num_return_sequences=1,
                          pad_token_id=50256,
@@ -90,7 +89,7 @@ if st.button("Ask"):
         # Store the user's input in the conversation history
         st.session_state.history.append(f"You: {user_input}")
 
-        # Generate the chatbot's response
+        # Generate the chatbot's response with context
         bot_response = generate_response(user_input)
 
         # Store the chatbot's response in the conversation history
