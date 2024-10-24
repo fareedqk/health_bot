@@ -57,8 +57,8 @@
 import streamlit as st
 from transformers import pipeline
 
-# Set up the text generation pipeline using a more suitable conversational model
-generator = pipeline("text-generation", model="gpt2")  # Can switch to conversational models
+# Set up the text generation pipeline using DialoGPT
+pipe = pipeline("text-generation", model="microsoft/DialoGPT-medium")
 
 # Streamlit app title
 st.title("Health Chatbot")
@@ -69,16 +69,13 @@ if 'history' not in st.session_state:
 
 # Function to generate chatbot responses
 def generate_response(user_input):
-    # Concatenate a limited conversation history to maintain context
-    context = " ".join(st.session_state.history[-4:]) + " " + user_input  # Limiting to last 4 exchanges
-    response = generator(context,
-                         max_length=150,
-                         num_return_sequences=1,
-                         pad_token_id=50256,
-                         truncation=True,
-                         temperature=0.7,
-                         top_k=50,
-                         top_p=0.95)
+    # Prepare conversation context for DialoGPT (user's inputs and bot responses)
+    conversation = [{"role": "user", "content": msg} if i % 2 == 0 else {"role": "bot", "content": msg} 
+                    for i, msg in enumerate(st.session_state.history)]
+    conversation.append({"role": "user", "content": user_input})
+    
+    # Generate response using the model
+    response = pipe(conversation)
     return response[0]['generated_text']
 
 # Input box for user symptoms
@@ -89,7 +86,7 @@ if st.button("Ask"):
         # Store the user's input in the conversation history
         st.session_state.history.append(f"You: {user_input}")
 
-        # Generate the chatbot's response with context
+        # Generate the chatbot's response
         bot_response = generate_response(user_input)
 
         # Store the chatbot's response in the conversation history
